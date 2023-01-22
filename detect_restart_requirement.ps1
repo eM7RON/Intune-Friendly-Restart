@@ -8,19 +8,35 @@ $Reboot_Delay = 1
 ##################################################################################################
 # 									Variables to fill
 ##################################################################################################
-	
+
+$LogFile="C:\ProgramData\Microsoft\IntuneManagementExtension\Logs\ONI-Restart-Policy-Detection.log"
+Start-Transcript $LogFile
+
+Write-Host "Detection initiated"
+
 # Check Windows registry keys if restart required
 #Adapted from https://gist.github.com/altrive/5329377
 #Based on <http://gallery.technet.microsoft.com/scriptcenter/Get-PendingReboot-Query-bdb79542>
 function Test-PendingReboot
 {
- if (Get-ChildItem "HKLM:\Software\Microsoft\Windows\CurrentVersion\Component Based Servicing\RebootPending" -EA Ignore) { return $true }
- if (Get-Item "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update\RebootRequired" -EA Ignore) { return $true }
- if (Get-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager" -Name PendingFileRenameOperations -EA Ignore) { return $true }
+	Write-Host "Executing Test-PendingReboot"
+ if (Get-ChildItem "HKLM:\Software\Microsoft\Windows\CurrentVersion\Component Based Servicing\RebootPending" -EA Ignore) {
+	Write-Host "HKLM:\Software\Microsoft\Windows\CurrentVersion\Component Based Servicing\RebootPending detected"
+	return $true
+}
+ if (Get-Item "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update\RebootRequired" -EA Ignore) { 
+	Write-Host "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update\RebootRequired detected"
+	return $true 
+}
+ if (Get-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager" -Name PendingFileRenameOperations -EA Ignore) {
+	Write-Host "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\PendingFileRenameOperations detected"
+	return $true 
+}
  try { 
    $util = [wmiclass]"\\.\root\ccm\clientsdk:CCM_ClientUtilities"
    $status = $util.DetermineIfRebootPending()
    if(($status -ne $null) -and $status.RebootPending){
+	Write-Host '[wmiclass]"\\.\root\ccm\clientsdk:CCM_ClientUtilities" determined reboot pending'
      return $true
    }
  }catch{}
@@ -73,18 +89,21 @@ $Boot_Uptime_Days = $Diff_boot_time.Days
 $Hour = $Diff_boot_time.Hours
 $Minutes = $Diff_boot_time.Minutes
 $Reboot_Time = "$Boot_Uptime_Days day(s)" + ": $Hour hour(s)" + " : $minutes minute(s)"
-write-output "Last reboot/shutdown: $Reboot_Time"				
+Write-Host "Last reboot/shutdown: $Reboot_Time"			
 If($Boot_Uptime_Days -ge $Reboot_Delay){
-		write-output "Device uptime is longer than $Reboot_Delay days. Restart required"			
-		EXIT 1		
+	Write-Host "Device uptime is longer than $Reboot_Delay days. Restart required"
+	Stop-Transcript
+	EXIT 1		
 }
 
 $DoINeedAReboot = Test-PendingReboot
 if ($DoINeedAReboot) {
-    write-output "Windows registry indictaes a restart is required"	
+	Write-Host "Windows registry indictates a restart is required"
     #invoke-expression -Command .\restart_service.ps1
     #Restart-Computer
-    EXIT 1
+    Stop-Transcript
+	EXIT 1
   }
-write-output "Restart not required"	
+Write-Host "Restart not required"
+Stop-Transcript
 EXIT 0
