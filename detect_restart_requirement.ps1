@@ -3,7 +3,7 @@
 ##################################################################################################
 
 # Delay for BIOS update - if BIOS release is older than the delay, it will continue the process
-$Reboot_Delay = 1
+$Reboot_Delay = 0.5
 
 ##################################################################################################
 # 									Variables to fill
@@ -28,10 +28,10 @@ function Test-PendingReboot
 	Write-Host "HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update\RebootRequired detected"
 	return $true 
 }
- if (Get-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager" -Name PendingFileRenameOperations -EA Ignore) {
-	Write-Host "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\PendingFileRenameOperations detected"
-	return $true 
-}
+#  if (Get-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager" -Name PendingFileRenameOperations -EA Ignore) {
+# 	Write-Host "HKLM:\SYSTEM\CurrentControlSet\Control\Session Manager\PendingFileRenameOperations detected"
+# 	return $true 
+# }
  try { 
    $util = [wmiclass]"\\.\root\ccm\clientsdk:CCM_ClientUtilities"
    $status = $util.DetermineIfRebootPending()

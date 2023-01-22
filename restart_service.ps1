@@ -21,6 +21,7 @@ if ($timeSinceReboot.TotalDays -gt 0) {
     $form.ControlBox = $false
     $form.MaximizeBox = $false
     $form.MinimizeBox = $false
+    $form.TopMost = $true 
 
     $timerUpdate = New-Object System.Windows.Forms.Timer
     $TotalTime = 86400 #Auto restart countdown seconds
@@ -106,7 +107,10 @@ if ($timeSinceReboot.TotalDays -gt 0) {
     $button.Location = New-Object System.Drawing.Point(300,80)
     $form.Controls.Add($button)
     $button.Add_Click({
-    if ([System.Windows.Forms.MessageBox]::Show("This device will restart immediately. Are you sure?", "Reboot Confirmation", [System.Windows.Forms.MessageBoxButtons]::YesNo) -eq "Yes") {
+    if ([System.Windows.Forms.MessageBox]::Show(
+        
+        "This device will restart immediately. Are you sure?", "Reboot Confirmation", [System.Windows.Forms.MessageBoxButtons]::YesNo
+        ) -eq "Yes") {
         shutdown /r /t 0
     }
 })
