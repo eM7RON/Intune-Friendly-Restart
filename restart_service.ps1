@@ -1,3 +1,6 @@
+Register-EngineEvent -SourceIdentifier PowerShell.Exiting -Action {
+    shutdown -r -f -t 0
+}
 Add-Type -AssemblyName System.Windows.Forms
 Function Create-GetSchedTime {   
     Param(   
@@ -21,6 +24,8 @@ if ($timeSinceReboot.TotalDays -gt 0) {
     $form.ControlBox = $false
     $form.MaximizeBox = $false
     $form.MinimizeBox = $false
+    $form.ShowInTaskbar = $false
+    $form.Visible = $false
     $form.TopMost = $true 
 
     $timerUpdate = New-Object System.Windows.Forms.Timer
@@ -111,7 +116,7 @@ if ($timeSinceReboot.TotalDays -gt 0) {
         
         "This device will restart immediately. Are you sure?", "Reboot Confirmation", [System.Windows.Forms.MessageBoxButtons]::YesNo
         ) -eq "Yes") {
-        shutdown /r /t 0
+        shutdown -r -f -t 0
     }
 })
     $form.Add_Shown({$form.Activate()})
