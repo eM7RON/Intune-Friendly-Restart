@@ -3,7 +3,7 @@
 ##################################################################################################
 
 # Delay for BIOS update - if BIOS release is older than the delay, it will continue the process
-$Reboot_Delay = 0.5
+$Reboot_Delay = 4
 
 ##################################################################################################
 # 									Variables to fill
