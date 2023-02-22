@@ -1,7 +1,3 @@
-# Register-EngineEvent -SourceIdentifier PowerShell.Exiting -Action {
-#     shutdown -r -f -t 0
-# }
-
 Add-Type -AssemblyName System.Windows.Forms
 Function Create-GetSchedTime {   
     Param(   
